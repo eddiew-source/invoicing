@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { saveInvoice } from '@/app/actions';
 import { CURRENCIES, calcTotals, formatMoney, addDays, toISODate } from '@/lib/format';
 
-const blankItem = () => ({ description: '', quantity: 1, unit_price: '' });
+const blankItem = () => ({ description: '', details: '', quantity: 1, unit_price: '' });
 
 export default function InvoiceForm({ id, initial, clients, settings, today }) {
   const startClient = String(initial?.client_id ?? clients[0]?.id ?? '');
@@ -82,9 +82,10 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
       <div className="card stack">
         <strong>Line items</strong>
         {items.map((it, i) => (
-          <div className="item" key={i}>
+          <div className="itemblock" key={i}>
+          <div className="item">
             <input
-              placeholder="Description" value={it.description}
+              placeholder="Item" value={it.description}
               onChange={(e) => setItem(i, { description: e.target.value })}
             />
             <input
@@ -92,7 +93,7 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
               onChange={(e) => setItem(i, { quantity: e.target.value })}
             />
             <input
-              type="number" step="any" placeholder="Unit price" value={it.unit_price}
+              type="number" step="any" placeholder="Unit price" title="Use a negative number for a deduction or credit" value={it.unit_price}
               onChange={(e) => setItem(i, { unit_price: e.target.value })}
             />
             <span className="amt">{formatMoney(totals.lines[i], currency)}</span>
@@ -102,6 +103,11 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
             >
               ×
             </button>
+          </div>
+          <textarea
+            className="details" rows={2} placeholder="Details shown under the item (optional)"
+            value={it.details || ''} onChange={(e) => setItem(i, { details: e.target.value })}
+          />
           </div>
         ))}
         <div>

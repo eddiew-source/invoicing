@@ -36,3 +36,7 @@ th{color:var(--muted);font-weight:500;font-size:12px}
 .notice{padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);margin-bottom:16px}
 details summary{cursor:pointer;font-weight:600}
 .muted{color:var(--muted)}
+
+.itemblock{display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.itemblock:last-of-type{border-bottom:0}
+textarea.details{min-height:0;font-size:13px}

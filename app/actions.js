@@ -61,6 +61,7 @@ function parseItems(raw) {
   items = items
     .map((i) => ({
       description: String(i.description || '').trim(),
+      details: String(i.details || '').trim(),
       quantity: Number(i.quantity) || 0,
       unit_price: Number(i.unit_price) || 0,
     }))

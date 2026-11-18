@@ -42,7 +42,7 @@ export default async function InvoicePage({ params, searchParams }) {
             <tbody>
               {inv.items.map((it, i) => (
                 <tr key={i}>
-                  <td>{it.description}</td>
+                  <td>{it.description}{it.details && <div className="muted" style={{ whiteSpace: 'pre-line', fontSize: 13 }}>{it.details}</div>}</td>
                   <td className="num">{Number(it.quantity)}</td>
                   <td className="num">{money(it.unit_price)}</td>
                   <td className="num">{money(t.lines[i])}</td>
