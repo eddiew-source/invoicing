@@ -8,6 +8,8 @@ import { sendInvoiceEmail } from '@/lib/mail';
 
 const str = (fd, k) => String(fd.get(k) ?? '').trim();
 const refresh = () => revalidatePath('/', 'layout');
+// Redirect with a one-off success flag that the green bar (components/Flash.js) picks up
+const go = (path, key) => redirect(`${path}${path.includes('?') ? '&' : '?'}ok=${key}&n=${Date.now()}`);
 
 export async function saveSettings(formData) {
   const sql = await getDb();
@@ -27,6 +29,7 @@ export async function saveSettings(formData) {
       next_number = ${Math.max(1, Number(formData.get('next_number')) || 1)}
     where id = 1`;
   refresh();
+  go('/settings', 'settings');
 }
 
 export async function saveClient(formData) {
@@ -49,6 +52,7 @@ export async function saveClient(formData) {
               values (${v.name}, ${v.email}, ${v.cc}, ${v.address}, ${v.tax_id}, ${v.currency})`;
   }
   refresh();
+  go('/clients', id ? 'client' : 'client-added');
 }
 
 function parseItems(raw) {
@@ -112,7 +116,7 @@ export async function saveInvoice(formData) {
     });
   }
   refresh();
-  redirect(`/invoices/${invoiceId}`);
+  go(`/invoices/${invoiceId}`, 'invoice');
 }
 
 export async function sendInvoice(id, formData) {
@@ -124,31 +128,43 @@ export async function sendInvoice(id, formData) {
   const to = str(formData, 'to');
   if (!to) throw new Error('Recipient email is required');
 
-  const pdf = await renderInvoicePdf({ invoice, seller });
-  await sendInvoiceEmail({
-    to,
-    cc: str(formData, 'cc'),
-    subject: str(formData, 'subject') || `Invoice ${invoice.number}`,
-    text: String(formData.get('message') ?? ''),
-    filename: `${invoice.number.replace(/[^\w.-]+/g, '_')}.pdf`,
-    pdf,
-    replyTo: seller.email || undefined,
-  });
+  let failure = null;
+  try {
+    const pdf = await renderInvoicePdf({ invoice, seller });
+    await sendInvoiceEmail({
+      to,
+      cc: str(formData, 'cc'),
+      subject: str(formData, 'subject') || `Invoice ${invoice.number}`,
+      text: String(formData.get('message') ?? ''),
+      filename: `${invoice.number.replace(/[^\w.-]+/g, '_')}.pdf`,
+      pdf,
+      replyTo: seller.email || undefined,
+    });
+  } catch (e) {
+    console.error('Sending invoice failed', e);
+    failure = e;
+  }
+  if (failure) {
+    const detail = encodeURIComponent(String(failure.message || failure).slice(0, 160));
+    redirect(`/invoices/${id}?err=send&detail=${detail}&n=${Date.now()}`);
+  }
+
   await sql`update invoices set sent_at = now(),
             status = case when status = 'paid' then status else 'sent' end where id = ${id}`;
   refresh();
-  redirect(`/invoices/${id}?sent=1`);
+  go(`/invoices/${id}`, 'sent');
 }
 
 export async function markPaid(id) {
   const sql = await getDb();
   await sql`update invoices set status = 'paid', paid_at = now() where id = ${id}`;
   refresh();
+  go(`/invoices/${id}`, 'paid');
 }
 
 export async function deleteInvoice(id) {
   const sql = await getDb();
   await sql`delete from invoices where id = ${id}`;
   refresh();
-  redirect('/');
+  go('/', 'deleted');
 }

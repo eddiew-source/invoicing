@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/db';
 import { saveSettings } from '@/app/actions';
+import SubmitButton from '@/components/SubmitButton';
 import { CURRENCIES } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
@@ -37,7 +38,7 @@ export default async function Settings() {
           <label>Invoice prefix<input name="invoice_prefix" defaultValue={s.invoice_prefix} /></label>
           <label>Next invoice number<input name="next_number" type="number" min="1" defaultValue={s.next_number} /></label>
         </div>
-        <div><button type="submit">Save settings</button></div>
+        <div><SubmitButton>Save settings</SubmitButton></div>
       </form>
     </>
   );

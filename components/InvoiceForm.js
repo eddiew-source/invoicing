@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { saveInvoice } from '@/app/actions';
+import SubmitButton from '@/components/SubmitButton';
 import { CURRENCIES, calcTotals, formatMoney, addDays, toISODate } from '@/lib/format';
 
 const blankItem = () => ({ description: '', details: '', quantity: 1, unit_price: '' });
@@ -30,7 +31,7 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
     const next = e.target.value;
     setClientId(next);
     const c = clientById(next);
-    if (!id && c?.currency) setCurrency(c.currency);
+    if (!id) setCurrency(c?.currency || settings.default_currency);
   }
 
   return (
@@ -85,7 +86,7 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
           <div className="itemblock" key={i}>
           <div className="item">
             <input
-              placeholder="Item" value={it.description}
+              placeholder="Item" required value={it.description}
               onChange={(e) => setItem(i, { description: e.target.value })}
             />
             <input
@@ -93,7 +94,7 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
               onChange={(e) => setItem(i, { quantity: e.target.value })}
             />
             <input
-              type="number" step="any" placeholder="Unit price" title="Use a negative number for a deduction or credit" value={it.unit_price}
+              type="number" step="any" placeholder="Unit price" required title="Use a negative number for a deduction or credit" value={it.unit_price}
               onChange={(e) => setItem(i, { unit_price: e.target.value })}
             />
             <span className="amt">{formatMoney(totals.lines[i], currency)}</span>
@@ -130,7 +131,7 @@ export default function InvoiceForm({ id, initial, clients, settings, today }) {
       </label>
 
       <div>
-        <button type="submit">Save invoice</button>
+        <SubmitButton>Save invoice</SubmitButton>
       </div>
     </form>
   );

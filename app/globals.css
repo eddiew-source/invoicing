@@ -40,3 +40,39 @@ details summary{cursor:pointer;font-weight:600}
 .itemblock{display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .itemblock:last-of-type{border-bottom:0}
 textarea.details{min-height:0;font-size:13px}
+
+:root{--ok-bg:#067647;--ok-fg:#fff;--err-bg:#b42318;--err-fg:#fff}
+@media (prefers-color-scheme:dark){:root{--ok-bg:#47cd89;--ok-fg:#0b1f15;--err-bg:#f97066;--err-fg:#2a0b08}}
+button:disabled{opacity:.6;cursor:progress}
+.flash{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;font-weight:600;animation:flash-in .2s ease-out}
+.flash.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.flash.err{background:var(--err-bg);color:var(--err-fg)}
+.flash button{background:transparent;border:0;color:inherit;font-size:20px;line-height:1;padding:0 4px}
+.flash-detail{font-weight:400;opacity:.9}
+@keyframes flash-in{from{transform:translateY(-100%)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
+
+/* analytics */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pill{padding:5px 12px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--text);font-size:13px;background:var(--card)}
+.pill.active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.kpi .label{font-size:12px;color:var(--muted)}
+.kpi .value{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums}
+.kpi.warn .value{color:var(--danger)}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:10px}
+.chart .b-paid{fill:var(--accent)}
+.chart .b-open{fill:var(--accent);opacity:.35}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;background:var(--accent)}
+.legend i.open{opacity:.35}
+.cbar{display:grid;grid-template-columns:minmax(80px,170px) 1fr 120px;gap:10px;align-items:center;margin:6px 0;font-size:14px}
+.cbar .track{display:flex;height:14px;background:var(--bg);border-radius:4px;overflow:hidden}
+.cbar .seg-paid{background:var(--accent)}
+.cbar .seg-open{background:var(--accent);opacity:.35}
+.cbar .cname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cbar .cval{font-variant-numeric:tabular-nums;text-align:right}

@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import { getDb } from '@/lib/db';
 import { calcTotals, formatMoney, fmtDate, defaultEmailText } from '@/lib/format';
 import { sendInvoice, markPaid, deleteInvoice } from '@/app/actions';
+import SubmitButton from '@/components/SubmitButton';
 
 export const dynamic = 'force-dynamic';
 
-export default async function InvoicePage({ params, searchParams }) {
+export default async function InvoicePage({ params }) {
   const { id } = await params;
-  const sp = await searchParams;
   const sql = await getDb();
   const [inv] = await sql`select * from invoices where id = ${Number(id)}`;
   if (!inv) notFound();
@@ -28,8 +28,6 @@ export default async function InvoicePage({ params, searchParams }) {
           <Link className="btn ghost" href={`/invoices/new?from=${inv.id}`}>Copy to new</Link>
         </div>
       </div>
-
-      {sp?.sent && <div className="notice">Invoice emailed.</div>}
 
       <div className="card stack">
         <div className="grid2">
@@ -67,18 +65,18 @@ export default async function InvoicePage({ params, searchParams }) {
           </div>
           <label>Subject<input name="subject" defaultValue={`Invoice ${inv.number} from ${seller.business_name}`} /></label>
           <label>Message<textarea name="message" defaultValue={defaultEmailText(inv, seller)} /></label>
-          <div><button type="submit">Send with PDF attached</button></div>
+          <div><SubmitButton pendingText="Sending…">Send with PDF attached</SubmitButton></div>
         </form>
       </div>
 
       <div className="row">
         {inv.status !== 'paid' && (
-          <form action={markPaid.bind(null, inv.id)}><button type="submit" className="ghost">Mark as paid</button></form>
+          <form action={markPaid.bind(null, inv.id)}><SubmitButton className="ghost" pendingText="Saving…">Mark as paid</SubmitButton></form>
         )}
         <details>
           <summary>Delete</summary>
           <form action={deleteInvoice.bind(null, inv.id)}>
-            <button type="submit" className="danger">Delete {inv.number} permanently</button>
+            <SubmitButton className="danger" pendingText="Deleting…">Delete {inv.number} permanently</SubmitButton>
           </form>
         </details>
       </div>
