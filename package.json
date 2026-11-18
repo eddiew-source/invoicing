@@ -1,0 +1,19 @@
+{
+  "name": "simple-invoices",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "nodemailer": "^6.9.16",
+    "pdf-lib": "^1.17.1",
+    "postgres": "^3.4.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "engines": { "node": ">=20" }
+}
